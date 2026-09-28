@@ -25,25 +25,15 @@
     <header class="bg-slate-900 text-white shadow-lg py-4 px-6">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 p-2.5 rounded-xl shadow">
-                    <i class="fa-solid fa-gears text-2xl text-white"></i>
+                <div class="bg-white p-1.5 rounded-xl shadow">
+                    <img src="composa logo.png" alt="Composa" class="h-10 w-auto">
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide">Filtro Dinámico de Repuestos</h1>
-                    <p class="text-xs text-slate-400">Selección guiada e inteligente para estaciones de servicio</p>
+                    <h1 class="text-xl font-bold tracking-wide">Composa</h1>
+                    <p class="text-xs text-slate-400">Selección de repuestos</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-3">
-                <label for="excelUpload" class="cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 px-4 rounded-xl shadow transition flex items-center gap-2">
-                    <i class="fa-solid fa-file-excel"></i> Cargar nuevo Excel / CSV
-                </label>
-                <input type="file" id="excelUpload" accept=".xlsx, .xls, .csv" class="hidden">
-                
-                <button id="resetBtn" class="bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold py-2 px-4 rounded-xl shadow transition flex items-center gap-2">
-                    <i class="fa-solid fa-rotate-left"></i> Reiniciar
-                </button>
-            </div>
         </div>
     </header>
 
@@ -151,18 +141,10 @@
                     <p class="text-slate-400 text-center py-10 text-xs italic">Sigue los pasos de la izquierda para seleccionar los repuestos que necesitas.</p>
                 </div>
 
-                <!-- Botones de Acción -->
-                <div class="space-y-2 pt-2">
-                    <button id="sheetsBtn" disabled class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-table"></i> Guardar en Google Sheets
-                    </button>
-                    
-                    <button id="copyBtn" disabled class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
-                        <i class="fa-regular fa-copy"></i> Copiar al Portapapeles
-                    </button>
-                    
-                    <button id="whatsappBtn" disabled class="w-full bg-green-600 hover:bg-green-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp"></i> Enviar por WhatsApp
+                <!-- Botón Enviar -->
+                <div class="pt-2">
+                    <button id="sendBtn" disabled class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar
                     </button>
                 </div>
             </div>
@@ -171,6 +153,28 @@
     </main>
 
     <!-- Motor JS con Lista Completa e Integración Google Sheets -->
+    <!-- Modal de Envío -->
+    <div id="sendModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-40 p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-3 animate-fade-in">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="text-base font-bold text-slate-800"><i class="fa-solid fa-paper-plane text-blue-600 mr-2"></i>¿Cómo deseas enviar?</h3>
+                <button id="closeModal" class="text-slate-400 hover:text-slate-600 transition text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <button id="sheetsBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-table"></i> Guardar en Google Sheets
+            </button>
+
+            <button id="copyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+                <i class="fa-regular fa-copy"></i> Copiar al Portapapeles
+            </button>
+
+            <button id="whatsappBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp"></i> Enviar por WhatsApp
+            </button>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

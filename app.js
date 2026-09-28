@@ -46,45 +46,20 @@ function getVal(row, keys) {
     return '';
 }
 
-const resetBtn = document.getElementById('resetBtn');
-const cartList = document.getElementById('cartList');
+const cartList      = document.getElementById('cartList');
 const selectedCount = document.getElementById('selectedCount');
-const copyBtn = document.getElementById('copyBtn');
-const whatsappBtn = document.getElementById('whatsappBtn');
-const sheetsBtn = document.getElementById('sheetsBtn');
-const pathSummary = document.getElementById('pathSummary');
+const sendBtn       = document.getElementById('sendBtn');
+const copyBtn       = document.getElementById('copyBtn');
+const whatsappBtn   = document.getElementById('whatsappBtn');
+const sheetsBtn     = document.getElementById('sheetsBtn');
+const pathSummary   = document.getElementById('pathSummary');
+const sendModal     = document.getElementById('sendModal');
 
-// Carga de Excel dinámico
-document.getElementById('excelUpload').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+// Modal
+sendBtn.addEventListener('click', () => sendModal.classList.remove('hidden'));
+document.getElementById('closeModal').addEventListener('click', () => sendModal.classList.add('hidden'));
+sendModal.addEventListener('click', (e) => { if (e.target === sendModal) sendModal.classList.add('hidden'); });
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-        try {
-            const data = new Uint8Array(evt.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-            if (jsonData.length > 0) {
-                currentData = jsonData;
-                document.getElementById('dataStatus').innerHTML = `
-                    <i class="fa-solid fa-circle-check text-emerald-600 mr-2 text-base"></i>
-                    <strong>¡Archivo cargado!</strong> Se leyeron <strong>${currentData.length} repuestos</strong> desde "${file.name}".
-                `;
-                resetBtn.click();
-            } else {
-                showToast('El archivo no contiene filas válidas.', 'error');
-            }
-        } catch (err) {
-            showToast('Error al leer el archivo. Asegúrate de que sea un Excel o CSV válido.', 'error');
-            console.error(err);
-        }
-    };
-    reader.readAsArrayBuffer(file);
-});
 
 // Carga desde Google Sheets
 async function loadData() {
@@ -123,16 +98,13 @@ async function loadData() {
 // Inicialización
 document.addEventListener('DOMContentLoaded', loadData);
 
-resetBtn.addEventListener('click', () => {
+function resetSelections() {
     selections = { tipo: null, zona: null, estacion: null, marcaModelo: null, repuestos: [] };
-    document.getElementById('step2').classList.add('hidden');
-    document.getElementById('step3').classList.add('hidden');
-    document.getElementById('step4').classList.add('hidden');
-    document.getElementById('step5').classList.add('hidden');
+    ['step2', 'step3', 'step4', 'step5'].forEach(id => document.getElementById(id).classList.add('hidden'));
     pathSummary.classList.add('hidden');
     renderStep1();
     updateSummary();
-});
+}
 
 // Paso 1: Tipo
 function renderStep1() {
@@ -301,11 +273,11 @@ function updateSummary() {
 
     selectedCount.innerText = `${selections.repuestos.length} ítems`;
 
-    if (selections.repuestos.length === 0) {
+    const noItems = selections.repuestos.length === 0;
+    sendBtn.disabled = noItems;
+
+    if (noItems) {
         cartList.innerHTML = `<p class="text-slate-400 text-center py-10 text-xs italic">Sigue los pasos de la izquierda para seleccionar los repuestos que necesitas.</p>`;
-        copyBtn.disabled = true;
-        whatsappBtn.disabled = true;
-        sheetsBtn.disabled = true;
     } else {
         cartList.innerHTML = '';
         selections.repuestos.forEach((r, idx) => {
@@ -320,9 +292,6 @@ function updateSummary() {
             `;
             cartList.appendChild(div);
         });
-        copyBtn.disabled = false;
-        whatsappBtn.disabled = false;
-        sheetsBtn.disabled = false;
     }
 }
 
@@ -347,7 +316,7 @@ sheetsBtn.addEventListener('click', async () => {
     sheetsBtn.disabled = true;
     copyBtn.disabled = true;
     whatsappBtn.disabled = true;
-    resetBtn.disabled = true;
+    sendBtn.disabled = true;
     sheetsBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Guardando...`;
 
     const payload = {
@@ -366,9 +335,9 @@ sheetsBtn.addEventListener('click', async () => {
             body: JSON.stringify(payload)
         });
 
+        sendModal.classList.add('hidden');
         showToast('¡Requerimiento registrado en Google Sheets!', 'success');
-        resetBtn.disabled = false;
-        resetBtn.click();
+        resetSelections();
     } catch (error) {
         showToast('Error al conectar con Google Sheets. Verifica la conexión.', 'error');
         console.error(error);
@@ -379,7 +348,7 @@ sheetsBtn.addEventListener('click', async () => {
         sheetsBtn.innerHTML = originalBtnText;
         copyBtn.disabled = false;
         whatsappBtn.disabled = false;
-        resetBtn.disabled = false;
+        sendBtn.disabled = false;
     }
 });
 
@@ -395,6 +364,7 @@ copyBtn.addEventListener('click', () => {
     });
 
     navigator.clipboard.writeText(text);
+    sendModal.classList.add('hidden');
     showToast('¡Lista copiada al portapapeles!', 'info');
 });
 
@@ -409,5 +379,6 @@ whatsappBtn.addEventListener('click', () => {
         text += `• ${r.repuesto} _(${r.nombre})_\n`;
     });
 
+    sendModal.classList.add('hidden');
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
 });
