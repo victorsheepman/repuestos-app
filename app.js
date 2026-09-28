@@ -339,7 +339,15 @@ sheetsBtn.addEventListener('click', async () => {
     if (selections.repuestos.length === 0) return;
 
     const originalBtnText = sheetsBtn.innerHTML;
+
+    // Desactivar toda interacción durante el envío
+    const stepContainer = document.getElementById('stepContainer');
+    stepContainer.style.pointerEvents = 'none';
+    stepContainer.style.opacity = '0.5';
     sheetsBtn.disabled = true;
+    copyBtn.disabled = true;
+    whatsappBtn.disabled = true;
+    resetBtn.disabled = true;
     sheetsBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Guardando...`;
 
     const payload = {
@@ -359,12 +367,19 @@ sheetsBtn.addEventListener('click', async () => {
         });
 
         showToast('¡Requerimiento registrado en Google Sheets!', 'success');
+        resetBtn.disabled = false;
+        resetBtn.click();
     } catch (error) {
         showToast('Error al conectar con Google Sheets. Verifica la conexión.', 'error');
         console.error(error);
     } finally {
+        stepContainer.style.pointerEvents = '';
+        stepContainer.style.opacity = '';
         sheetsBtn.disabled = false;
         sheetsBtn.innerHTML = originalBtnText;
+        copyBtn.disabled = false;
+        whatsappBtn.disabled = false;
+        resetBtn.disabled = false;
     }
 });
 
